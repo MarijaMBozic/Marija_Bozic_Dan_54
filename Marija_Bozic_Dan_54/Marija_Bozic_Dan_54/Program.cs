@@ -6,7 +6,7 @@ namespace Marija_Bozic_Dan_54
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+          
         }
     }
 }
