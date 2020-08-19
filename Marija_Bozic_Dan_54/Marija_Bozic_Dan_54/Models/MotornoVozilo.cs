@@ -6,7 +6,7 @@ namespace Marija_Bozic_Dan_54.Models
 {
     public abstract class MotornoVozilo
     {
-        public double ZapreminaVozila { get; set; }
+        public double ZapreminaMotora { get; set; }
         public int Tezina { get; set; }
         public string Kategorija { get; set; }
         public string TipMotora { get; set; }
