@@ -1,5 +1,6 @@
 ﻿using Marija_Bozic_Dan_54.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Timers;
@@ -9,6 +10,7 @@ namespace Marija_Bozic_Dan_54
     class Program
     {
         static List<Automobil> automobili = new List<Automobil>();
+        static ConcurrentBag<Automobil> najbrziCrveniAutomobil = new ConcurrentBag<Automobil>();
         static string svetloNaSemaforu = "zeleno";
 
         static void Main(string[] args)
@@ -25,10 +27,10 @@ namespace Marija_Bozic_Dan_54
             traktori.Add(traktor1);
             traktori.Add(traktor2);
 
-            Automobil automobil1 = InicializationAutomobil(1400, 1000, "B", "Benzin", "Zuta", 999, "NS123", 5, 50, "manuelni", "Fiat", 123, 50);
-            Automobil automobil2 = InicializationAutomobil(1500, 1200, "B", "Disel", "Crvena", 789, "NS321", 3, 55, "manuelni", "Punto", 321, 55);
-            Automobil automobil3 = InicializationAutomobil(1600, 1300, "B", "Benzin", "Plava", 858, "NS741", 4, 60, "manuelni", "Opel", 741, 60);
-            Automobil automobil4 = InicializationAutomobil(1700, 1400, "B", "Disel", "Crvena", 969, "NS852", 3, 65, "manuelni", "BMW", 147, 65);                     
+            Automobil automobil1 = InicializationAutomobil(1400, 1000, "B", "Benzin", "Zuta", 999, "NS123", 5, 80, "manuelni", "Fiat", 123, 80);
+            Automobil automobil2 = InicializationAutomobil(1500, 1200, "B", "Disel", "Crvena", 789, "NS321", 3, 85, "manuelni", "Punto", 321, 85);
+            Automobil automobil3 = InicializationAutomobil(1600, 1300, "B", "Benzin", "Plava", 858, "NS741", 4, 90, "manuelni", "Opel", 741, 90);
+            Automobil automobil4 = InicializationAutomobil(1700, 1400, "B", "Disel", "Crvena", 969, "NS852", 3, 95, "manuelni", "BMW", 147, 95);                     
             automobili.Add(automobil1);
             automobili.Add(automobil2);
             automobili.Add(automobil3);
@@ -62,48 +64,15 @@ namespace Marija_Bozic_Dan_54
             foreach (Automobil automobil in automobili)
             {
                 Thread thread = new Thread(()=>PocniTrku(automobil));
-                thread.Name = automobil.BrojMotora.ToString();
+                thread.Name = automobil.Proizvodjac;
                 thread.Start();
-                Console.WriteLine("{0}", thread.Name);
+                Console.WriteLine("Krenuo trku: {0}", thread.Name);
             }         
         }
 
-        private static void PosleDesetSekundi(Object source, System.Timers.ElapsedEventArgs e, Automobil auto)
+       private static void Semafor()
         {
-            Console.WriteLine("Posle 10 seklundi start");
-            auto.AutomobilNaSemaforu = true;
-            if (svetloNaSemaforu == "zeleno")
-            {
-                auto.Kreni();                
-            }
-            else
-            {               
-                ////System.Timers.Timer timer = new System.Timers.Timer();
-                ////timer.Interval = 1000;
-                ////timer.Elapsed += (sender, e) => PosleJedneSekundi(sender, e, auto, timer);
-                ////timer.AutoReset = true;
-                ////timer.Enabled = true;
-                auto.Zaustavi();              
-            }          
-            Console.WriteLine("Posle 10 seklundi end");
-        }
-
-        //private static void PosleJedneSekundi(Object source, System.Timers.ElapsedEventArgs e, Automobil auto, System.Timers.Timer timer)
-        //{
-        //    Console.WriteLine("Posle 1 seklundi start");
-        //    if (svetloNaSemaforu == "zeleno")
-        //    {
-        //        auto.Kreni();
-        //        timer.Stop();
-        //        Console.WriteLine("Zeleno svetlo za automobil {0}", auto.Proizvodjac);
-        //    }
-
-        //    Console.WriteLine("Posle 1 seklundi end");
-        //}
-
-        private static void Semafor()
-        {
-            int brojac = 27;
+            int brojac = 11;
             while (brojac != 0)
             {
                 brojac--;
@@ -126,15 +95,13 @@ namespace Marija_Bozic_Dan_54
                     }
                 }
                 Console.WriteLine("Svetla na semaforu {0}", svetloNaSemaforu);
-                Thread.Sleep(30000);
+                Thread.Sleep(2000);
             }
-
-            Console.WriteLine("Semafor");
         }
 
         private static void PotrosnjaGoriva(List<Automobil> automobili)
         {
-            int brojac = 220;
+            int brojac = 20;
             while (brojac != 0)
             {
                 brojac--;
@@ -143,10 +110,9 @@ namespace Marija_Bozic_Dan_54
                     automobili[i].Potrosnja();
                     if(automobili[i].TrenutnoStanjeGoriva<=0)
                     {
-                        Console.WriteLine("Automobil {0} je zavrsio trku ostao je bez goriva.", automobili[i].Proizvodjac);
-                        //automobili.RemoveAt(i);
-                        //i--;                       
-                        automobili[i].Zaustavi();
+                       
+                        automobili.RemoveAt(i);
+                        i--;                      
                     }
                 }
                 foreach (Automobil automobil in automobili)
@@ -159,18 +125,45 @@ namespace Marija_Bozic_Dan_54
 
         public static void PocniTrku(Automobil auto)
         {
-            //Thread.Sleep(10000);            
-            //auto.Zaustavi();
-            //if (svetloNaSemaforu == "zeleno")
-            //{
-            //    auto.Kreni();
-            //}
+            Thread.Sleep(10000);
 
-            System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 10000;
-            timer.Elapsed += (sender, e) => PosleDesetSekundi(sender, e, auto);
-            timer.AutoReset = false;
-            timer.Enabled = true;
+            Console.WriteLine("Posle 10 seklundi semafor");
+            auto.AutomobilNaSemaforu = true;
+            if (svetloNaSemaforu == "zeleno")
+            {
+                auto.Kreni();
+            }
+            else
+            {
+                auto.Zaustavi();
+            }
+                        
+            Thread.Sleep(3000);
+           
+            if (auto.TrenutnoStanjeGoriva < 15 && auto.TrenutnoStanjeGoriva > 0)
+            {
+                Console.WriteLine("Posle 3 sekunde {0} natocio gorivo!", auto.Proizvodjac);
+
+                auto.SipajGorivo();
+            }
+            else if(auto.TrenutnoStanjeGoriva<0)
+            {
+                Console.WriteLine("Automobil {0} je zavrsio trku ostao je bez goriva.", auto.Proizvodjac);
+                Thread.Sleep(Timeout.Infinite);
+            }
+
+            Thread.Sleep(7000);            
+            Console.WriteLine("Stigao na na cilj--------------------------------------------- {0}", auto.Proizvodjac);
+
+            lock(najbrziCrveniAutomobil)
+            {
+                if (auto.Boja == "Crvena" && najbrziCrveniAutomobil.Count == 0)
+                {
+                    najbrziCrveniAutomobil.Add(auto);
+                    Console.WriteLine("Najbrzi crveni automobil je {0}!", auto.Proizvodjac);
+                }
+            }
+           
         }
 
         public static Kamion InicializationKamion(double zapreminaMotora, int tezina, string kategorija,

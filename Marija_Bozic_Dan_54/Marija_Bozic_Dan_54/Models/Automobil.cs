@@ -19,7 +19,10 @@ namespace Marija_Bozic_Dan_54.Models
         public EventWaitHandle _auto = new AutoResetEvent(false);
 
         public void Prefarbaj()
-        { }
+        {
+            Boja = "Zelena";
+            BrojSaobracajne += 100;
+        }
 
         public override void Kreni()
         {
@@ -45,7 +48,7 @@ namespace Marija_Bozic_Dan_54.Models
             if(TrenutnoStanjeGoriva>0)
             {
                 Random rnd = new Random();
-                TrenutnoStanjeGoriva -= rnd.Next(1, 10);
+                TrenutnoStanjeGoriva -= rnd.Next(1, 2);
                 Console.WriteLine("Trenutno stanje goriva za automobil {0} je {1}", Proizvodjac, TrenutnoStanjeGoriva);
             }         
         }
@@ -53,6 +56,7 @@ namespace Marija_Bozic_Dan_54.Models
         public void SipajGorivo()
         {
             TrenutnoStanjeGoriva = ZapreminaRezeorvara;
+            Console.WriteLine("Nasuto goriva {0} za auto {1}", TrenutnoStanjeGoriva, Proizvodjac);
         }
     }
 }
